@@ -1,0 +1,21 @@
+#exetrnal{
+    color: cadetblue;
+}
+p{
+    font-family: dansingScript;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+@font-face {
+font-family: dansingScript;
+src: url(./dansingScript-variable_wght.ttf)
+}
+@font-face {
+    font-family: BebasNeue-Refgular.ttf;
+    src: url();
+}
+@font-face {
+    font-family: BebasNeue;
+    font-size: ;
+} {
+    
+}
