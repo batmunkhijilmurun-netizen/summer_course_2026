@@ -1,0 +1,32 @@
+#h3 {
+    color: navy;
+}
+#p {
+    color: #fb7d9e
+}
+#dasgal{
+    color: rgb(128, 0, 128);
+}
+div{
+    color:darkblue;
+    background-color: white;
+}
+.color {
+    width: 120px;
+    height: 120px;
+    display: inline-block;
+    margin: 10px;
+}
+.red {
+    background-color: rgb(0, 255, 238);
+}
+.blue {
+    background-color: blue;
+}
+.green {
+    background-color:green ;
+}
+.yellow {
+    background-color: yellow;
+}
+

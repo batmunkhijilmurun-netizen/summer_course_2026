@@ -28,7 +28,7 @@ section {
     display: inline-block;
 }
 
-images {
+#images {
     width: 300px;
     height: 300px;
 }
