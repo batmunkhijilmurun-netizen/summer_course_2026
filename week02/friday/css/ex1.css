@@ -1,0 +1,94 @@
+#div {
+    background-color: aqua;
+    width: 300px;
+    height: 200px;
+    margin: auto;
+}
+
+#div2 {
+    width: 500px;
+    height: 300px;
+    margin: auto;
+    background-color: blue;
+}
+
+#div3 {
+    width: 200px;
+    height: 200px;
+    background-color: blue;
+    margin: auto;
+    overflow: hidden;
+}
+#div4 {
+    width: 250px;
+    height: 300px;
+    background-color: brown;
+    box-sizing: border-box;
+    margin: auto;
+}
+/* . {
+    margin: auto;
+    padding: auto;
+    box-sizing: border-box;
+} */
+.conteiner {
+    width: 100%;
+    gap: 20px;
+    padding: 20px;
+}
+.box {
+    width: 25%;
+    background-color:#cfeff7;
+    padding: 20px;
+    border: 1px solid #999;
+    display: inline-block;
+}
+.box h2 {
+    margin-bottom: 15px;
+    font-size: 32px;
+}
+.box p {
+    font-size: 32px;
+}
+#div7 {
+    padding-top: 400px;
+    max-width: 100px;
+    background-color: brown;
+    margin: auto;
+}
+#div8 {
+    padding-top: 300px;
+    min-height: 100px;
+    container: inherit;
+    background-color: azure;
+}
+#div9 {
+    height: auto;
+    width: 100px;
+}
+#div10 {
+   width: 300px;
+   height: 100px;
+   background-color: lightblue;
+   border: 1px solid black;
+   padding: 10px;
+   overflow: scroll;
+   overflow: hidden;
+   white-space: nowrap; 
+}
+.conteiner {
+    width: 900px;
+    height: 400px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #d7fff7;
+    border: 2px solid #000;
+    overflow: auto;
+}
+.box {
+    width: 40px;
+    height: 150px;
+    border: 2px solid #000;
+    
+}
+

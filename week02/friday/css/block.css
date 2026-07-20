@@ -1,0 +1,16 @@
+.block {
+    height: 30px;
+    background-color: teal;
+    border-radius: 5px;
+    margin: 5px;
+    padding: 10px;
+}
+img {
+    width: 25%;
+    display: block;
+}
+
+.menu {
+    background-color: #454d62;
+    height: 37px;
+}
