@@ -71,4 +71,26 @@ border-top: 1px solid black;
 #box1 {
     border-left: 1px solid black;
 }
-#box
+#box000{
+    border-right: 1px solid black;
+}
+#box02{
+    border-bottom: 1px solid black;
+}
+#box0 {
+    border-right: 1px solid black;
+}
+#box0 {
+    border-right: 1px solid black;
+}
+#box00 {
+    border-right: 1px solid black;
+    border-bottom: 1px solid black;
+}
+#img {
+    width: 100px;
+    height: 100px;
+}
+#boxs {
+    border-bottom: 1px solid black;
+}

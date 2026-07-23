@@ -1,0 +1,34 @@
+.flex-container {
+background-color: midnightblue;
+display: flexbox;
+align-items: center;
+height: 800px;
+width: 800px;
+flex-wrap: nowrap;
+justify-content: center;
+justify-content: space-around;
+border: 2px black;
+flex-direction: row-reverse;
+display: flex;
+}
+.flex-child {
+  width: 50px;
+  height: 50px;
+  margin: auto;
+  border: 2px yellow;
+}
+.flex01 {
+    background-color: brown;
+}
+.flex02 {
+    background-color: pink;
+}
+.flex03 {
+    background-color: red;
+}
+.flex04 {
+    background-color: yellow;
+}
+.flex05 {
+    background-color: green;
+}
