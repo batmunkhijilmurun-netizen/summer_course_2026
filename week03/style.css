@@ -1,0 +1,52 @@
+
+body {
+    display: flex;
+    margin: 0;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #f4f7f6;
+    color: #333333;
+}
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #2b2d42
+    color: #ffffff;
+    padding: 20px 40px;
+}
+.nav-links {
+    display: flex;
+    gap: 20px;
+}
+.hero-section {
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+}
+.profile-card {
+    display: flex;
+    gap: 30px;
+    padding: 15px;
+    border-radius: 15px;
+    background-color: #ffffff;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0, 1)
+}
+.profile-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background-color:darkgray;
+}
+.profile-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+}
+.action-btn {
+    background-color: #EF233C;
+}
+.site-footer {
+    background-color: #8D99AE;
+}
