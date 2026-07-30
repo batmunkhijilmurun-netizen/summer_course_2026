@@ -1,0 +1,22 @@
+#container ul {
+    height: 30px;
+    background-color: yellowgreen;
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    align-items: center;
+}
+#container li {
+    list-style: none;
+}
+
+@media (max-width: 300px) {
+    #container ul{
+    width: 30px;
+    background-color: yellowgreen;
+    flex-direction: column;
+    display: flex;
+    gap: 30px;
+    height: 100%;
+    }
+}

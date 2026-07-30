@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Тоглогчийн Профайл - Томруулсан</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: #0d1117;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 30px;
+    }
+
+   
+    .profile-card {
+      width: 100%;
+      max-width: 1000px; 
+      height: 1000px;    
+      background-color: #eef0eb;
+      border-radius: 28px;
+      overflow-y: auto;  
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+    }
+
+    
+    .profile-card::-webkit-scrollbar {
+      width: 10px;
+    }
+    .profile-card::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .profile-card::-webkit-scrollbar-thumb {
+      background: #aaa;
+      border-radius: 10px;
+    }
+
+    
+    .header-banner {
+      background: linear-gradient(180deg, #1d4ed8 0%, #3b82f6 100%);
+      height: 180px; 
+      position: relative;
+    }
+
+   
+    .user-info-bar {
+      background-color: #1e293b;
+      color: white;
+      padding: 20px 24px 20px 110px; 
+      position: relative;
+      margin-top: 80px;
+    }
+
+    
+    .avatar {
+      width: 75px;
+      height: 75px;
+      background: linear-gradient(135deg, #ff416c, #ff4b2b);
+      border-radius: 50%;
+      position: absolute;
+      left: 20px;
+      top: -25px;
+      border: 4px solid #1e293b;
+    }
+
+    
+    .username {
+      font-weight: bold;
+      font-size: 22px;
+    }
+
+    .user-stats {
+      font-size: 15px;
+      color: #94a3b8;
+      margin-top: 6px;
+    }
+
+   
+    .content {
+      padding: 28px;
+    }
+
+    .section-title {
+      font-size: 20px; 
+      font-weight: bold;
+      color: #334155;
+      margin-bottom: 14px;
+      margin-top: 15px;
+    }
+
+    
+    .list-item {
+      background-color: #e2e8f0;
+      padding: 16px 20px;
+      border-radius: 14px;
+      margin-bottom: 12px;
+      font-size: 18px;    
+      color: #334155;
+      display: flex;
+      align-items: center;
+    }
+
+    .icon {
+      margin-right: 12px;
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="profile-card">
+
+    <div class="header-banner"></div>
+    <div class="user-info-bar">
+      <div class="avatar"></div>
+      <div class="username">Бат-Эрдэнэ</div>
+      <div class="user-stats">Нэгдсэн: 2026 оны 3-р сар · Нийт тоглолт: 128</div>
+    </div>
+
+   
+    <div class="content">
+      <div class="section-title">Оноо</div>
+      <div class="list-item">Могой — 9800</div>
+      <div class="list-item">Сансрын буудлага — 8600</div>
+      <div class="list-item">Платформер — 8400</div>
+      <div class="list-item">Тетрис — 7900</div>
+      <div class="list-item">Пакман — 7500</div>
+
+      <div class="section-title">Медалиуд</div>
+      <div class="list-item"><span class="icon">🥇</span> Могой — 1-р байр</div>
+      <div class="list-item"><span class="icon">🥉</span> Сансрын буудлага — 3-р байр</div>
+      <div class="list-item"><span class="icon">🥇</span> 7 хоног дараалан тоглосон</div>
+      <div class="list-item"><span class="icon">🏅</span> Анхны 5000 оноо</div>
+      <div class="list-item"><span class="icon">🏅</span> Анхны 100 тоглолт</div>
+      <div class="list-item"><span class="icon">🏅</span> Шөнийн тоглогч</div>
+      <div class="list-item"><span class="icon">🏅</span> Өглөөний тоглогч</div>
+      <div class="list-item"><span class="icon">🏅</span> Марафон — 3 цаг</div>
+    </div>
+  </div>
+
+</body>
+</html>

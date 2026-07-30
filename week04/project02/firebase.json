@@ -1,0 +1,17 @@
+{
+  "hosting": {
+    "site": "summer-course-2026-ijilmurun-8d67f",
+    "public": "public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
