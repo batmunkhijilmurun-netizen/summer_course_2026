@@ -1,0 +1,45 @@
+ * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background-color: #f4f4f4; }
+
+    .cards { padding: 16px; }
+
+    .card {
+      background-color: #ffffff;
+      border: 1px solid #dddddd;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    /*
+      TODO 1: Таблет (min-width: 768px)
+      Media query бичиж дараах өөрчлөлтийг хий:
+        - .cards-ийг grid болго, 2 тэнцүү багана (1fr 1fr)
+        - gap: 16px
+        - .card-ийн margin-bottom-ийг 0 болго (gap нь орлоно)
+
+      TODO 2: Дэлгэц том үед (min-width: 1024px)
+      Media query бичиж дараах өөрчлөлтийг хий:
+        - .cards-ийг 3 тэнцүү багана болго
+
+      Шалгах: цонхны өргөнийг өөрчилж, 1 -> 2 -> 3 багана
+      болж өөрчлөгдөж байгааг ажигла.
+    */
+    
+@media (min-width: 768px) {
+  .cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .card {
+    margin-bottom: 0;
+  }
+}
+
+@media (min-width: 1024px) {
+  .cards {
+    grid-template-columns: 1fr 1fr 1fr; 
+  }
+}
