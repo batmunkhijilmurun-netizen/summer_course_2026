@@ -1,0 +1,25 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: sans-serif;
+}
+
+body {
+    background-color: white;
+}
+
+.dd{
+    font-size: 20px;
+    color: #fff;
+    font-weight: bold;
+    height: 49px;
+    width: 237px;
+    padding: 10px;
+    gap: 10px;
+    color: black;
+}
+
+.dd .alkus{
+    color: green;
+}
