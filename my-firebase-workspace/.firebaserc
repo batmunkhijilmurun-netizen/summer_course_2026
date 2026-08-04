@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "summer-course-2026-ijilmurun"
+  },
+  "targets": {
+    "summer-course-2026-ijilmurun": {
+      "hosting": {
+        "project01": [
+          "my-project01"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

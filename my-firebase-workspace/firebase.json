@@ -1,0 +1,22 @@
+{
+ "hosting": [
+ {
+ "target": "project01",
+ "public": "projects/project01",
+ "ignore": [
+ "firebase.json",
+ "**/.*",
+ "**/node_modules/**"
+ ]
+ },
+ {
+ "target": "project02",
+ "public": "projects/project02",
+ "ignore": [
+ "firebase.json",
+ "**/.*",
+ "**/node_modules/**"
+ ]
+ }
+ ]
+}
