@@ -1,0 +1,18 @@
+body {
+  margin: 0;
+  padding: 20px;
+  background-color: #1a1a2e;
+  color: #ffffff;
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+
+h1 {
+  color: #4ea8de;
+}
+
+#canvas-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 15px;
+}

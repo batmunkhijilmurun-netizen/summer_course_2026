@@ -1,0 +1,16 @@
+{
+  "hosting": {
+    "public": "fir-deploy-5eb8b",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}

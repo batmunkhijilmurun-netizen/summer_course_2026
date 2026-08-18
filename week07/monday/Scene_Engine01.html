@@ -1,0 +1,132 @@
+
+    <!DOCTYPE html>
+<html lang="mn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>p5.js Scene Engine v1 - Complete Project</title>
+                                
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-color: #050b14;
+      font-family: sans-serif;
+    }
+    canvas {
+      border-radius: 8px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    }
+  </style>
+</head>
+<body>
+
+  <script>
+  
+    const artPlan = {
+      title: "Cosmic Energy",
+      background: "#081a2b",
+      palette: ["#67e8f9", "#38bdf8", "#a5f3fc"],
+      shape: "circle", 
+      count: 15,
+      speed: 2,
+      minSize: 20,
+      maxSize: 55,
+      direction: "both"  
+    };
+
+    let particles = [];
+
+    function setup() {
+      createCanvas(600, 400);
+      buildScene(artPlan);
+    }
+
+   
+    function draw() {
+      background(artPlan.background);
+      
+      for (let p of particles) {
+        updateParticle(p);
+        drawParticle(p, artPlan.shape);
+      }
+    }
+
+   
+    function buildScene(plan) {
+      particles = []; 
+      for (let i = 0; i < plan.count; i++) {
+        let vxVal = 0;
+        let vyVal = 0;
+
+ 
+        if (plan.direction === "horizontal") {
+          vxVal = random(-plan.speed, plan.speed);
+          vyVal = 0;
+        } else if (plan.direction === "vertical") {
+          vxVal = 0;
+          vyVal = random(-plan.speed, plan.speed);
+        } else {
+          vxVal = random(-plan.speed, plan.speed);
+          vyVal = random(-plan.speed, plan.speed);
+        }
+
+        particles.push({
+          x: random(width),
+          y: random(height),
+          size: random(plan.minSize, plan.maxSize),
+          vx: vxVal,
+          vy: vyVal,
+          color: random(plan.palette)
+        });
+      }
+    }
+
+
+    function updateParticle(p) {
+ 
+      p.x += p.vx;
+      p.y += p.vy;
+
+      if (p.x < 0 || p.x > width) p.vx *= -1;
+      if (p.y < 0 || p.y > height) p.vy *= -1;
+    }
+
+    function drawParticle(p, shape) {
+      noStroke();
+      fill(p.color);
+
+      if (shape === "square") {
+        rectMode(CENTER);
+        square(p.x, p.y, p.size);
+      } else if (shape === "triangle") { 
+        let r = p.size / 2;
+        triangle(
+          p.x, p.y - r,
+          p.x - r, p.y + r,
+          p.x + r, p.y + r
+        );
+      } else {
+
+        circle(p.x, p.y, p.size);
+      }
+    }
+
+    function mousePressed() {
+      const shapes = ["circle", "square", "triangle"];
+      artPlan.shape = random(shapes);
+      artPlan.speed = random(1, 4);
+
+    }
+  </script>
+
+</body>
+</html>
+</body>
+</html>
