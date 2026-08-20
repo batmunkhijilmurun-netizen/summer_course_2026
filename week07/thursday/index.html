@@ -1,0 +1,91 @@
+`<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Particle Controller</title>
+
+    <link rel="stylesheet" href="./css/style.css">
+
+    <script src="./js/sketch.js" defer></script>
+    <script src="./js/p5.min.js"></script>
+</head>
+
+<body>
+
+    <main class="app">
+
+        <h1>Particle Controller</h1>
+
+        <section class="controls">
+
+            <div class="control">
+                <label for="count-slider">
+                    Count
+                </label>
+
+                <input id="count-slider" type="range" min="1" max="30" value="10">
+
+                <span id="count-value">
+                    10
+                </span>
+            </div>
+
+
+            <div class="control">
+                <label for="size-slider">
+                    Size
+                </label>
+
+                <input id="size-slider" type="range" min="10" max="80" value="30">
+
+                <span id="size-value">
+                    30
+                </span>
+            </div>
+
+
+            <div class="control">
+                <label for="color-input">
+                    Color
+                </label>
+
+                <input id="color-input" type="color" value="#3498db">
+            </div>
+
+
+            <div class="control">
+                <label for="shape-select">
+                    Shape
+                </label>
+
+                <select id="shape-select">
+
+                    <option value="circle">
+                        Circle
+                    </option>
+
+                    <option value="square">
+                        Square
+                    </option>
+
+                </select>
+            </div>
+
+
+            <button id="reset-button">
+                Reset
+            </button>
+
+        </section>
+
+
+        <section id="canvas-container"></section>
+
+    </main>
+
+</body>
+
+</html>`

@@ -5,7 +5,6 @@ const scene = {
 };
 
 function setup() {
-    // 1. HTML дээрх савны ID "canvas-container" (a-тай) байна
     const canvas = createCanvas(400, 400);
     canvas.parent("canvas-container");
 
@@ -13,7 +12,6 @@ function setup() {
     const colorInput = document.querySelector('#color-input');
     const shapeSelector = document.querySelector('#shape-select');
 
-    // 2. Эвент сонсогчдыг тус тусад нь (ганц ганцаар нь) зарлана
     if (colorInput) {
         colorInput.addEventListener('input', function () {
             scene.color = colorInput.value;
