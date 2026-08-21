@@ -1,10 +1,15 @@
 body {
   margin: 0;
   padding: 20px;
-  background-color: #1a1a2e;
   color: #ffffff;
   font-family: Arial, sans-serif;
   text-align: center;
+
+  background-image: url(./screenshot/aquaman.jpeg);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 #canvas-container {
@@ -12,3 +17,4 @@ body {
   justify-content: center;
   margin-top: 15px;
 }
+

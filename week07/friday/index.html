@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catch the Target</title>
+  <link rel="stylesheet" href="sketch.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+</head>
+<body>
+  <h1>Catch the Target</h1>
+  <div class="game-info">
+    <div>Score: <span id="score-value">0</span></div>
+    <div>Lives: <span id="lives-value">3</span></div>
+  </div>
+  <div class="controls">
+    <label for="difficulty-select">Difficulty</label>
+    <select id="difficulty-select">
+      <option value="easy">Easy</option>
+      <option value="medium">Medium</option>
+      <option value="hard">Hard</option>
+    </select>
+    <button id="start-button">Start</button>
+    <button id="reset-button">Reset</button>
+  </div>
+  <div id="canvas-container"></div>
+
+  <script src="index.js"></script>
+</body>
+</html>

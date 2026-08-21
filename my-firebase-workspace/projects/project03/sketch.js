@@ -1,11 +1,11 @@
-
 let fishes = [];
 let bubbles = [];
 let rocks = [];
 let seaweeds = [];
+let shark = null;
 
 function setup() {
-  let canvas = createCanvas(800, 500);
+  let canvas = createCanvas(1500, 900);
   canvas.parent('canvas-container');
 
   for (let i = 0; i < 15; i++) {
@@ -25,7 +25,7 @@ function setup() {
       height: random(80, 160),
       segmentCount: 10,
       color: color(random(20, 60), random(120, 180), random(50, 90)),
-      offset: random(1000) 
+      offset: random(1000)
     });
   }
 
@@ -40,7 +40,6 @@ function setup() {
     });
   }
 
-  
   for (let i = 0; i < 12; i++) {
     bubbles.push({
       x: random(width),
@@ -49,36 +48,43 @@ function setup() {
       speed: random(1, 3)
     });
   }
+
+  shark = {
+    x: width / 2,
+    y: height / 2,
+    size: 100,
+    speedX: 3,
+    speedY: 2
+  };
 }
 
 function draw() {
- 
-  background(24, 119, 186);
-
- 
+  background('#32409cff')
   drawSeaweeds();
-
 
   noStroke();
   fill(218, 183, 111);
   rect(0, height - 60, width, 60);
 
-
   drawRocks();
 
-  
   for (let b of bubbles) {
     drawBubble(b);
     moveBubble(b);
   }
 
-  
   for (let fish of fishes) {
     drawFish(fish.x, fish.y, fish.size, fish.color, fish.speed);
     moveFish(fish);
   }
-}
 
+  // Акул байгаа үед зурж, хөдөлгөн, загаснуудыг идэх логик ажиллана
+  if (shark) {
+    drawShark(shark.x, shark.y, shark.size, shark.speedX);
+    moveShark(shark);
+    checkSharkEatFishes();
+  }
+}
 
 function drawSeaweeds() {
   strokeWeight(6);
@@ -90,7 +96,6 @@ function drawSeaweeds() {
     let segmentHeight = s.height / s.segmentCount;
 
     for (let j = 0; j <= s.segmentCount; j++) {
-     
       let wave = sin(frameCount * 0.03 + s.offset + j * 0.3) * (j * 1.5);
       let px = s.x + wave;
       let py = s.baseY - j * segmentHeight;
@@ -100,7 +105,6 @@ function drawSeaweeds() {
   }
 }
 
-
 function drawRocks() {
   noStroke();
   for (let r of rocks) {
@@ -108,7 +112,6 @@ function drawRocks() {
     ellipse(r.x, r.y, r.w, r.h);
   }
 }
-
 
 function drawFish(x, y, size, fishColor, speed) {
   push();
@@ -118,11 +121,9 @@ function drawFish(x, y, size, fishColor, speed) {
     scale(-1, 1);
   }
 
-
   fill(fishColor);
   noStroke();
   ellipse(0, 0, size, size * 0.6);
-
 
   fill(fishColor);
   triangle(
@@ -130,7 +131,6 @@ function drawFish(x, y, size, fishColor, speed) {
     -size / 2 - size / 3, -size / 4,
     -size / 2 - size / 3, size / 4
   );
-
 
   fill(255);
   ellipse(size / 4, -size / 8, size / 5, size / 5);
@@ -140,12 +140,73 @@ function drawFish(x, y, size, fishColor, speed) {
   pop();
 }
 
-
 function moveFish(fish) {
   fish.x += fish.speed;
 
   if (fish.x + fish.size / 2 > width || fish.x - fish.size / 2 < 0) {
     fish.speed *= -1;
+  }
+}
+
+function drawShark(x, y, size, speedX) {
+  push();
+  translate(x, y);
+
+  if (speedX < 0) {
+    scale(-1, 1);
+  }
+
+  fill(120, 140, 160);
+  noStroke();
+  ellipse(0, 0, size * 1.3, size * 0.6);
+
+  triangle(
+    -size * 0.6, 0,
+    -size * 0.9, -size * 0.3,
+    -size * 0.9, size * 0.3
+  );
+
+  triangle(
+    -size * 0.1, -size * 0.25,
+    size * 0.1, -size * 0.25,
+    -size * 0.1, -size * 0.6
+  );
+
+
+  fill(255);
+  ellipse(size * 0.35, -size * 0.1, size * 0.15, size * 0.15);
+  fill(0);
+  ellipse(size * 0.37, -size * 0.1, size * 0.07, size * 0.07);
+
+
+  fill(255);
+  triangle(size * 0.4, size * 0.05, size * 0.45, size * 0.15, size * 0.5, size * 0.05);
+  triangle(size * 0.3, size * 0.05, size * 0.35, size * 0.15, size * 0.4, size * 0.05);
+
+  pop();
+}
+
+function moveShark(s) {
+  s.x += s.speedX;
+  s.y += s.speedY;
+
+  if (s.x + s.size / 2 > width || s.x - s.size / 2 < 0) {
+    s.speedX *= -1;
+  }
+  if (s.y + s.size / 4 > height - 60 || s.y - s.size / 4 < 0) {
+    s.speedY *= -1;
+  }
+}
+
+function checkSharkEatFishes() {
+  for (let i = fishes.length - 1; i >= 0; i--) {
+    let f = fishes[i];
+    let d = dist(shark.x, shark.y, f.x, f.y);
+
+
+    if (d < shark.size / 2) {
+      fishes.splice(i, 1);
+    }
   }
 }
 
@@ -187,4 +248,3 @@ function mousePressed() {
   }
 }
 
-document.addEventListener('contextmenu', event => event.preventDefault());

@@ -1,0 +1,41 @@
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: Arial, sans-serif;
+  background-color: #f0f4f8;
+  margin: 0;
+  padding: 20px;
+}
+
+.game-info {
+  display: flex;
+  gap: 20px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+button {
+  padding: 8px 16px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+#canvas-container {
+  display: flex;
+  justify-content: center;
+}
+
+canvas {
+  border: 3px solid #333;
+  border-radius: 8px;
+}
