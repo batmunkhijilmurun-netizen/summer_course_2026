@@ -59,7 +59,7 @@ function setup() {
 }
 
 function draw() {
-  background('#32409cff')
+  background('#32409cff');
   drawSeaweeds();
 
   noStroke();
@@ -78,7 +78,6 @@ function draw() {
     moveFish(fish);
   }
 
-  // Акул байгаа үед зурж, хөдөлгөн, загаснуудыг идэх логик ажиллана
   if (shark) {
     drawShark(shark.x, shark.y, shark.size, shark.speedX);
     moveShark(shark);
@@ -156,32 +155,42 @@ function drawShark(x, y, size, speedX) {
     scale(-1, 1);
   }
 
+  // Бие
   fill(120, 140, 160);
   noStroke();
   ellipse(0, 0, size * 1.3, size * 0.6);
 
+  // Сүүл
   triangle(
     -size * 0.6, 0,
     -size * 0.9, -size * 0.3,
     -size * 0.9, size * 0.3
   );
 
+  // Дээд сүүс
   triangle(
     -size * 0.1, -size * 0.25,
     size * 0.1, -size * 0.25,
     -size * 0.1, -size * 0.6
   );
 
-
+  // Нүд
   fill(255);
-  ellipse(size * 0.35, -size * 0.1, size * 0.15, size * 0.15);
+  ellipse(size * 0.35, -size * 0.15, size * 0.15, size * 0.15);
   fill(0);
-  ellipse(size * 0.37, -size * 0.1, size * 0.07, size * 0.07);
+  ellipse(size * 0.37, -size * 0.15, size * 0.07, size * 0.07);
 
+  // Амын хөдөлгөөн (ангалзах эффект)
+  let mouthOpen = abs(sin(frameCount * 0.1)) * (size * 0.12);
 
+  // Нээгдсэн ам (дөнгөж фоны өнгөөр зүсэж харуулна)
+  fill('#32409cff');
+  triangle(size * 0.35, 0, size * 0.68, -mouthOpen, size * 0.68, mouthOpen);
+
+  // Дээд ба доод шүднүүд
   fill(255);
-  triangle(size * 0.4, size * 0.05, size * 0.45, size * 0.15, size * 0.5, size * 0.05);
-  triangle(size * 0.3, size * 0.05, size * 0.35, size * 0.15, size * 0.4, size * 0.05);
+  triangle(size * 0.45, -mouthOpen + 2, size * 0.5, 0, size * 0.55, -mouthOpen + 2);
+  triangle(size * 0.45, mouthOpen - 2, size * 0.5, 0, size * 0.55, mouthOpen - 2);
 
   pop();
 }
@@ -202,7 +211,6 @@ function checkSharkEatFishes() {
   for (let i = fishes.length - 1; i >= 0; i--) {
     let f = fishes[i];
     let d = dist(shark.x, shark.y, f.x, f.y);
-
 
     if (d < shark.size / 2) {
       fishes.splice(i, 1);
@@ -247,4 +255,29 @@ function mousePressed() {
     }
   }
 }
+function moveShark(s) {
+  let moveSpeed = 4; // Акулын шилжих хурд
 
+  // W / w - Дээш
+  if (keyIsDown(87) || keyIsDown(119)) {
+    s.y -= moveSpeed;
+  }
+  // S / s - Доош
+  if (keyIsDown(83) || keyIsDown(115)) {
+    s.y += moveSpeed;
+  }
+  // A / a - Зүүн
+  if (keyIsDown(65) || keyIsDown(97)) {
+    s.x -= moveSpeed;
+    s.speedX = -1;
+  }
+  // D / d - Баруун
+  if (keyIsDown(68) || keyIsDown(100)) {
+    s.x += moveSpeed;
+    s.speedX = 1;
+  }
+
+  // Дэлгэцээс гаргахгүй байх хязгаарлалт
+  s.x = constrain(s.x, s.size / 2, width - s.size / 2);
+  s.y = constrain(s.y, s.size / 4, height - 60);
+}
