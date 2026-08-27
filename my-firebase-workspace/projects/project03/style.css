@@ -1,8 +1,13 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  padding: 20px;
+  padding: 24px;
+  min-height: 100vh;
   color: #ffffff;
-  font-family: Arial, sans-serif;
+  font-family: "Arial", sans-serif;
   text-align: center;
 
   background-image: url(./screenshot/aquaman.jpeg);
@@ -12,9 +17,99 @@ body {
   background-attachment: fixed;
 }
 
+.app-header {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+
+  background: rgba(4, 20, 50, 0.55);
+  border: 1px solid rgba(120, 200, 255, 0.25);
+  border-radius: 18px;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 8px 30px rgba(0, 10, 40, 0.45);
+}
+
+.app-header__title {
+  text-align: left;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 26px;
+  letter-spacing: 0.5px;
+  background: linear-gradient(90deg, #7fd4ff, #c9eaff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.subtitle {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #9fc8e8;
+}
+
+.stats {
+  display: flex;
+  gap: 14px;
+}
+
+.stat {
+  min-width: 92px;
+  padding: 10px 16px;
+  background: rgba(10, 35, 75, 0.7);
+  border: 1px solid rgba(120, 200, 255, 0.2);
+  border-radius: 14px;
+}
+
+.stat__label {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #8fb8dd;
+}
+
+.stat__value {
+  display: block;
+  font-size: 24px;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.stat__value--accent {
+  color: #ffd166;
+}
+
+.hint {
+  margin: 14px auto;
+  font-size: 14px;
+  color: #d8ecff;
+}
+
+kbd {
+  padding: 2px 7px;
+  font-size: 12px;
+  border: 1px solid rgba(140, 210, 255, 0.5);
+  border-bottom-width: 3px;
+  border-radius: 6px;
+  background: rgba(20, 50, 100, 0.6);
+  color: #eaf6ff;
+}
+
 #canvas-container {
   display: flex;
   justify-content: center;
-  margin-top: 15px;
+  margin-top: 12px;
 }
 
+#canvas-container canvas {
+  border-radius: 18px;
+  border: 2px solid rgba(120, 200, 255, 0.3);
+  box-shadow: 0 20px 60px rgba(0, 10, 50, 0.55);
+}

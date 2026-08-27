@@ -7,6 +7,9 @@
       "hosting": {
         "project03": [
           "my-project-03"
+        ],
+        "project01": [
+          "my-project01"
         ]
       }
     }

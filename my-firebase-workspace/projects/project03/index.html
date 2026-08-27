@@ -8,8 +8,32 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
 </head>
 <body>
-  <h1>Interactive Aquarium</h1>
-  <p>Дэлгэц дээр маус хоёр товшиж (click) шинэ загас эсвэл бөмбөлөг (bubble) нэмээрэй!</p>
+  <header class="app-header">
+    <div class="app-header__title">
+      <h1>Interactive Aquarium</h1>
+      <p class="subtitle">Далайн гүний виртуал ертөнц</p>
+    </div>
+    <div class="stats">
+      <div class="stat">
+        <span class="stat__label">Загас</span>
+        <span class="stat__value" id="stat-fish">6</span>
+      </div>
+      <div class="stat">
+        <span class="stat__label">Бөмбөлөг</span>
+        <span class="stat__value" id="stat-bubbles">12</span>
+      </div>
+      <div class="stat">
+        <span class="stat__label">Идсэн загас</span>
+        <span class="stat__value stat__value--accent" id="stat-eaten">0</span>
+      </div>
+    </div>
+  </header>
+
+  <p class="hint">
+    Зүүн товч — загас нэмэх &nbsp;·&nbsp; Баруун товч — бөмбөлөг нэмэх &nbsp;·&nbsp;
+    <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> / <kbd>↑</kbd><kbd>←</kbd><kbd>↓</kbd><kbd>→</kbd> — акул хөдөлгөх
+  </p>
+  
   <div id="canvas-container"></div>
   <script src="sketch.js"></script>
 </body>

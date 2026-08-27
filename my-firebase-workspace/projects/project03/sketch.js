@@ -8,10 +8,32 @@ let giantClam = null;
 let bgImage = null;
 let bgW = 0;
 let bgH = 0;
+let eatenCount = 0;
+
+// ---- 3D харагдац / гэрэлтүүлгийн туслах функцууд ----
+function rgba(r, g, b, a) {
+  return `rgba(${r}, ${g}, ${b}, ${a})`;
+}
+
+// Радиаль градиент (гэрэлтэй, гүдгэр харагдуулна)
+function fillRadialGradient(x, y, r, c1, c2) {
+  let g = drawingContext.createRadialGradient(x, y, 0, x, y, r);
+  g.addColorStop(0, c1);
+  g.addColorStop(1, c2);
+  drawingContext.fillStyle = g;
+}
+
+// Шугаман (босоо) градиент (дээрээ бараан, доороо цайвар)
+function fillLinearGradient(x0, y0, x1, y1, c1, c2) {
+  let g = drawingContext.createLinearGradient(x0, y0, x1, y1);
+  g.addColorStop(0, c1);
+  g.addColorStop(1, c2);
+  drawingContext.fillStyle = g;
+}
 
 // Зургийг ачаалах
 function preload() {
-  bgImage = loadImage('screenshot/us.jpg');
+  bgImage = loadImage('screenshot/us01.jpeg');
 }
 
 function setup() {
@@ -51,7 +73,10 @@ function setup() {
       y: random(50, height - 150),
       size: random(30, 60),
       speed: random() > 0.5 ? speedVal : -speedVal,
-      color: color(random(200, 255), random(100, 200), random(50, 150))
+      baseSpeed: speedVal,
+      color: color(random(200, 255), random(100, 200), random(50, 150)),
+      offset: random(1000),
+      dartUntil: 0
     });
   }
 
@@ -64,12 +89,15 @@ function setup() {
     });
   }
 
+  // Акул
   shark = {
     x: width / 2,
     y: height / 2,
-    size: 100,
+    size: 160,
     speedX: 3,
-    speedY: 2
+    speedY: 2,
+    tilt: 0,
+    biting: 0
   };
 
   // Наймаалжны анхны байрлал
@@ -81,7 +109,7 @@ function setup() {
     offset: 0
   };
 
-  // Том дун хясааны байрлал (Элсэн дээр байрлана)
+  // Том дун хясааны байрлал
   giantClam = {
     x: width * 0.75,
     y: height - 60,
@@ -91,8 +119,11 @@ function setup() {
 }
 
 function draw() {
-  // Зурагтай background (cover)
   image(bgImage, (width - bgW) / 2, (height - bgH) / 2, bgW, bgH);
+
+  drawLightRays();
+  drawAtmosphere();
+
   drawSeaweeds();
 
   // Элс / Далайн ёроол
@@ -102,7 +133,17 @@ function draw() {
 
   drawRocks();
 
-  // Том хясаа болон наймаалжийг зурах
+  // Акулын сүүдэр (элсэн дээр)
+  if (shark) {
+    let depthFactor = constrain(1 - (height - 40 - shark.y) / height, 0.12, 1);
+    noStroke();
+    fill(0, 0, 30, 80 * depthFactor);
+    ellipse(
+      shark.x + shark.speedX * 30, height - 28,
+      shark.size * 1.7 * depthFactor, shark.size * 0.28 * depthFactor
+    );
+  }
+
   drawGiantClam(giantClam);
   drawOctopus(octopus);
   moveOctopus(octopus);
@@ -113,31 +154,82 @@ function draw() {
   }
 
   for (let fish of fishes) {
-    drawFish(fish.x, fish.y, fish.size, fish.color, fish.speed);
-    moveFish(fish);
+    drawFish(fish.x, fish.y, fish.size, fish.color, fish.speed, fish.offset);
+    moveFish(fish, shark);
   }
 
   if (shark) {
-    drawShark(shark.x, shark.y, shark.size, shark.speedX);
+    drawShark(shark.x, shark.y, shark.size, shark.speedX, shark.tilt);
     moveShark(shark);
     checkSharkEatFishes();
   }
+
+  drawVignette();
+  updateStats();
+}
+
+// Далайн гүнээс гэрэл тусах промин (light rays)
+function drawLightRays() {
+  noStroke();
+  let t = frameCount * 0.01;
+  for (let i = 0; i < 6; i++) {
+    let x = ((i * 300 + t * 40) % (width + 400)) - 200;
+    let w = 110 + sin(frameCount * 0.02 + i) * 40;
+    fill(255, 240, 200, 16);
+    beginShape();
+    vertex(x, -10);
+    vertex(x + w, -10);
+    vertex(x + w + 180 + sin(i + t) * 60, height);
+    vertex(x - 140 + cos(i + t) * 40, height);
+    endShape(CLOSE);
+  }
+}
+
+// Далайн гүний өнгөт манан
+function drawAtmosphere() {
+  noStroke();
+  fillLinearGradient(
+    0, 0, 0, height,
+    rgba(40, 120, 180, 45),
+    rgba(5, 25, 70, 60)
+  );
+  rect(0, 0, width, height);
+}
+
+// Кадрын ирмэгийг бараантган хүрээлэх (cinematic vignette)
+function drawVignette() {
+  noStroke();
+  fillRadialGradient(
+    width / 2, height / 2, width * 0.55,
+    rgba(0, 0, 0, 0),
+    rgba(0, 0, 25, 160)
+  );
+  rect(0, 0, width, height);
 }
 
 function drawSeaweeds() {
-  strokeWeight(6);
   noFill();
 
   for (let s of seaweeds) {
-    stroke(s.color);
-    beginShape();
     let segmentHeight = s.height / s.segmentCount;
 
+    // Бүдэг дэвсгэр сэрвээ (гүнзгий харагдац)
+    stroke(red(s.color) * 0.6, green(s.color) * 0.6, blue(s.color) * 0.6, 120);
+    strokeWeight(9);
+    beginShape();
     for (let j = 0; j <= s.segmentCount; j++) {
       let wave = sin(frameCount * 0.03 + s.offset + j * 0.3) * (j * 1.5);
-      let px = s.x + wave;
-      let py = s.baseY - j * segmentHeight;
-      vertex(px, py);
+      vertex(s.x + 5 + wave, s.baseY - j * segmentHeight);
+    }
+    endShape();
+
+    // Үндсэн гэрэлтэй иш
+    stroke(s.color);
+    strokeWeight(6);
+    beginShape();
+    for (let j = 0; j <= s.segmentCount; j++) {
+      let wave = sin(frameCount * 0.03 + s.offset + j * 0.3) * (j * 1.5);
+      vertex(s.x + wave, s.baseY - j * segmentHeight);
     }
     endShape();
   }
@@ -146,51 +238,65 @@ function drawSeaweeds() {
 function drawRocks() {
   noStroke();
   for (let r of rocks) {
-    fill(r.color);
+    fillRadialGradient(
+      r.x - r.w * 0.15, r.y - r.h * 0.3, r.w * 0.8,
+      rgba(red(r.color) + 40, green(r.color) + 40, blue(r.color) + 40, 255),
+      rgba(red(r.color), green(r.color), blue(r.color), 255)
+    );
     ellipse(r.x, r.y, r.w, r.h);
   }
 }
 
-// Том хясаа зурах функц (Нээгдэж, хаагдах хөдөлгөөнтэй + Сувдтай)
 function drawGiantClam(clam) {
   push();
   translate(clam.x, clam.y);
 
-  // Хясааны нээгдэх өнцгийн хөдөлгөөн
   let openAngle = sin(frameCount * 0.02) * 0.25 + 0.15;
 
-  // Доод таг
-  fill(180, 140, 190);
+  // Доод хясаа
+  noStroke();
+  fillLinearGradient(
+    0, 0, 0, clam.h / 2,
+    rgba(210, 160, 220, 255),
+    rgba(130, 70, 150, 255)
+  );
   stroke(100, 60, 110);
   strokeWeight(3);
   arc(0, 0, clam.w, clam.h, 0, PI, CHORD);
 
-  // Доторх сувд
+  // Гялалзсан сувд (radial гэрэлтэй)
   noStroke();
-  fill(255, 245, 230);
-  ellipse(0, -5, 22, 22);
+  fillRadialGradient(0, -5, 20, rgba(255, 255, 255, 255), rgba(255, 235, 210, 30));
+  ellipse(0, -5, 24, 24);
   fill(255);
   ellipse(-3, -8, 7, 7);
 
-  // Дээд таг (Нээгдэж, хаагдана)
   push();
   translate(0, -5);
   rotate(-openAngle);
   stroke(100, 60, 110);
   strokeWeight(3);
-  fill(200, 150, 210);
+  fillLinearGradient(
+    0, -clam.h / 2, 0, 0,
+    rgba(225, 175, 235, 255),
+    rgba(160, 100, 180, 255)
+  );
   arc(0, 0, clam.w, clam.h, PI, TWO_PI, CHORD);
   pop();
 
   pop();
 }
 
-// Наймаалж зурах функц
 function drawOctopus(oct) {
   push();
   translate(oct.x, oct.y);
 
-  // Наймаалжны хөлнүүд (Давалгаалах хөдөлгөөнтэй)
+  // Сүүдэр
+  noStroke();
+  fill(0, 0, 30, 50);
+  ellipse(0, oct.size * 0.6, oct.size * 1.3, oct.size * 0.3);
+
+  // Гар (тентакли) - баяжуулсан өнгө
   stroke(220, 80, 110);
   strokeWeight(8);
   noFill();
@@ -204,33 +310,57 @@ function drawOctopus(oct) {
     endShape();
   }
 
-  // Наймаалжны толгой
+  // Гарны сорох савар (suction cups)
+  fill(250, 220, 225, 200);
   noStroke();
-  fill(230, 90, 120);
+  for (let i = -3; i <= 3; i++) {
+    for (let j = 15; j < 45; j += 12) {
+      let wave = sin(frameCount * 0.1 + i + j * 0.1) * 8;
+      ellipse(i * 8 + wave + 6, j, 4, 4);
+    }
+  }
+
+  // Толгой (radial градиент - гүдгэр харагдац)
+  fillRadialGradient(
+    -oct.size * 0.15, -oct.size * 0.35, oct.size * 0.7,
+    rgba(255, 150, 175, 255),
+    rgba(200, 60, 100, 255)
+  );
   ellipse(0, -10, oct.size, oct.size * 0.8);
 
-  // Нүднүүд
+  // Нүд (аниад нээгддэг)
+  let blink = (frameCount * 0.02 + oct.offset) % 90;
+  let closed = blink < 3;
   fill(255);
   ellipse(-12, -12, 14, 14);
   ellipse(12, -12, 14, 14);
-  fill(0);
-  ellipse(-12, -12, 6, 6);
-  ellipse(12, -12, 6, 6);
+  if (closed) {
+    fill(200, 60, 100);
+    ellipse(-12, -12, 14, 4);
+    ellipse(12, -12, 14, 4);
+  } else {
+    fill(0);
+    ellipse(-12, -12, 6, 6);
+    ellipse(12, -12, 6, 6);
+    fill(255);
+    ellipse(-13, -14, 2.5, 2.5);
+    ellipse(11, -14, 2.5, 2.5);
+  }
 
   pop();
 }
 
-// Наймаалжны хөдөлгөөн
 function moveOctopus(oct) {
   oct.x += oct.speedX;
-  oct.y += sin(frameCount * 0.05) * 0.5; // Бага зэрэг дээш доош хөвнө
+  oct.y += sin(frameCount * 0.05) * 0.5;
 
   if (oct.x > width - 100 || oct.x < 100) {
     oct.speedX *= -1;
   }
 }
 
-function drawFish(x, y, size, fishColor, speed) {
+// Жижиг загасыг илүү гоё, амьд зурах (гөлгөр бие, хөдөлгөөнт сэрвээ, гялалзсан нүд)
+function drawFish(x, y, size, fishColor, speed, offset) {
   push();
   translate(x, y);
 
@@ -238,94 +368,295 @@ function drawFish(x, y, size, fishColor, speed) {
     scale(-1, 1);
   }
 
-  fill(fishColor);
-  noStroke();
-  ellipse(0, 0, size, size * 0.6);
+  let w = size;        // Биеийн урт
+  let h = size * 0.55; // Биеийн өндөр
+  let tailWob = sin(frameCount * 0.15) * w * 0.06; // Сүүлний даллагаа
 
+  noStroke();
+
+  // Биеийн доорх сүүдэр
+  fill(0, 0, 30, 40);
+  ellipse(w * 0.05, h * 0.55, w * 0.9, h * 0.3);
+
+  // Сүүлний сэрвээ (дээд + доод дэлбээ, хөдөлгөөнтэй)
   fill(fishColor);
   triangle(
-    -size / 2, 0,
-    -size / 2 - size / 3, -size / 4,
-    -size / 2 - size / 3, size / 4
+    -w * 0.45, -h * 0.05,
+    -w * 0.95, -h * 0.42 + tailWob * 2,
+    -w * 0.55, -h * 0.05
+  );
+  triangle(
+    -w * 0.45, h * 0.05,
+    -w * 0.95, h * 0.42 + tailWob * 2,
+    -w * 0.55, h * 0.05
   );
 
-  fill(255);
-  ellipse(size / 4, -size / 8, size / 5, size / 5);
-  fill(0);
-  ellipse(size / 4 + 1, -size / 8, size / 10, size / 10);
+  // Нурууны сэрвээ
+  fill(red(fishColor) * 0.85, green(fishColor) * 0.85, blue(fishColor) * 0.85);
+  beginShape();
+  vertex(-w * 0.08, -h * 0.3);
+  bezierVertex(-w * 0.2, -h * 0.85 + tailWob, w * 0.1, -h * 0.8 + tailWob, w * 0.14, -h * 0.28);
+  endShape(CLOSE);
+
+  // Гэдэсний сэрвээ
+  triangle(
+    -w * 0.05, h * 0.25,
+    -w * 0.05, h * 0.55 + tailWob * 0.5,
+    w * 0.12, h * 0.28
+  );
+
+  // Бие (гөлгөр дусал хэлбэртэй, босоо градиент - 3D харагдац)
+  let r = red(fishColor), g = green(fishColor), b = blue(fishColor);
+  fillLinearGradient(
+    -w * 0.2, -h * 0.8, -w * 0.2, h * 0.8,
+    rgba(r * 0.75, g * 0.75, b * 0.75, 255),
+    rgba(min(255, r + 60), min(255, g + 60), min(255, b + 60), 255)
+  );
+  beginShape();
+  vertex(-w * 0.45, 0);
+  bezierVertex(-w * 0.2, -h * 0.95, w * 0.4, -h * 0.55, w * 0.52, 0);
+  bezierVertex(w * 0.4, h * 0.55, -w * 0.2, h * 0.95, -w * 0.45, 0);
+  endShape(CLOSE);
+
+  // Нурууны гялбаа (sheen)
+  fill(255, 255, 255, 55);
+  ellipse(0, -h * 0.35, w * 0.55, h * 0.2);
+
+  // Цээжний сэрвээ
+  fill(red(fishColor) * 0.7, green(fishColor) * 0.7, blue(fishColor) * 0.7);
+  ellipse(w * 0.02, h * 0.2, w * 0.2, h * 0.22);
+
+  // Биеийн судал
+  noFill();
+  stroke(0, 0, 0, 30);
+  strokeWeight(w * 0.05);
+  arc(0, -h * 0.12, w * 0.32, h * 0.45, PI * 0.15, PI * 0.85);
+  arc(-w * 0.14, -h * 0.06, w * 0.32, h * 0.5, PI * 0.15, PI * 0.85);
+
+  // Заламж
+  stroke(0, 0, 0, 40);
+  strokeWeight(1.5);
+  noFill();
+  arc(w * 0.2, 0, w * 0.2, h * 0.55, -PI * 0.65, PI * 0.65);
+
+  // Нүд (гялалзсан, заримдаа анидаг)
+  let blink = (frameCount * 0.02 + offset) % 80;
+  noStroke();
+  if (blink < 3) {
+    stroke(25, 25, 35);
+    strokeWeight(w * 0.022);
+    line(w * 0.26, -h * 0.12, w * 0.36, -h * 0.12);
+  } else {
+    fill(255);
+    ellipse(w * 0.3, -h * 0.12, w * 0.14, w * 0.14);
+    fill(25, 25, 35);
+    ellipse(w * 0.32, -h * 0.12, w * 0.075, w * 0.075);
+    fill(255);
+    ellipse(w * 0.34, -h * 0.15, w * 0.03, w * 0.03);
+  }
 
   pop();
 }
 
-function moveFish(fish) {
+function moveFish(fish, shark) {
   fish.x += fish.speed;
+  fish.y += sin(frameCount * 0.04 + fish.x * 0.01) * 0.6;
+
+  // Акул ойртоход загас сандарч зугтана (амьд зан)
+  if (shark) {
+    let d = dist(fish.x, fish.y, shark.x, shark.y);
+    if (d < shark.size * 1.9) {
+      fish.dartUntil = frameCount + 35;
+    }
+    if (frameCount < fish.dartUntil) {
+      let dir = fish.x < shark.x ? -1 : 1;
+      fish.speed = lerp(fish.speed, dir * 7, 0.1);
+    } else {
+      fish.speed = lerp(fish.speed, fish.baseSpeed * (fish.speed >= 0 ? 1 : -1), 0.02);
+    }
+  }
 
   if (fish.x + fish.size / 2 > width || fish.x - fish.size / 2 < 0) {
     fish.speed *= -1;
   }
 }
 
-function drawShark(x, y, size, speedX) {
+// Акул зурах функц (3D харагдац: градиент, сүүдэр, хазайлт, хазаж хаздаг хөдөлгөөн)
+function drawShark(x, y, size, speedX, tilt) {
   push();
   translate(x, y);
+  rotate(tilt + sin(frameCount * 0.05) * 0.02);
 
   if (speedX < 0) {
     scale(-1, 1);
   }
 
-  fill(120, 140, 160);
+  let s = size;
+  let tailWag = sin(frameCount * 0.12) * s * 0.08;   // Сүүлний даллагаа
+  let finSway = sin(frameCount * 0.1) * s * 0.04;    // Сэрвээний даллагаа
+
   noStroke();
-  ellipse(0, 0, size * 1.3, size * 0.6);
 
+  // Сүүдэр (усан доторх гүн)
+  fill(0, 0, 30, 45);
+  ellipse(s * 0.1, s * 0.32, s * 1.4, s * 0.22);
+
+  // Сүүлний сэрвээ (дээд + доод дэлбээ)
+  fill(8, 18, 55);
   triangle(
-    -size * 0.6, 0,
-    -size * 0.9, -size * 0.3,
-    -size * 0.9, size * 0.3
+    -s * 0.55, 0,
+    -s * 0.98, -s * 0.42 + tailWag * 2,
+    -s * 0.6, -s * 0.02
+  );
+  fill(20, 40, 80);
+  triangle(
+    -s * 0.55, 0,
+    -s * 0.95, s * 0.4 + tailWag * 2,
+    -s * 0.6, s * 0.02
   );
 
-  triangle(
-    -size * 0.1, -size * 0.25,
-    size * 0.1, -size * 0.25,
-    -size * 0.1, -size * 0.6
+  // Бие (босоо градиент - дээд тал бараан, доод тал цайвар)
+  fillLinearGradient(
+    -s * 0.3, -s * 0.42, -s * 0.3, s * 0.42,
+    rgba(10, 22, 60, 255),
+    rgba(40, 75, 140, 255)
   );
+  beginShape();
+  vertex(-s * 0.55, 0);
+  bezierVertex(-s * 0.3, -s * 0.45, s * 0.15, -s * 0.35, s * 0.62, 0);
+  bezierVertex(s * 0.2, s * 0.3, -s * 0.15, s * 0.3, -s * 0.55, 0);
+  endShape(CLOSE);
 
-  fill(255);
-  ellipse(size * 0.35, -size * 0.15, size * 0.15, size * 0.15);
-  fill(0);
-  ellipse(size * 0.37, -size * 0.15, size * 0.07, size * 0.07);
+  // Хэвлийн цайвар хэсэг
+  fill(70, 110, 165, 190);
+  beginShape();
+  vertex(-s * 0.5, 0);
+  bezierVertex(-s * 0.25, s * 0.22, s * 0.2, s * 0.24, s * 0.58, 0);
+  bezierVertex(s * 0.15, s * 0.12, -s * 0.2, s * 0.1, -s * 0.5, 0);
+  endShape(CLOSE);
 
-  let mouthOpen = abs(sin(frameCount * 0.1)) * (size * 0.12);
+  // Нурууны гялбаа (усны тусгал)
+  fill(160, 200, 255, 40);
+  beginShape();
+  vertex(-s * 0.45, -s * 0.2);
+  bezierVertex(-s * 0.2, -s * 0.4, s * 0.1, -s * 0.32, s * 0.5, -s * 0.05);
+  bezierVertex(s * 0.1, -s * 0.22, -s * 0.2, -s * 0.3, -s * 0.45, -s * 0.2);
+  endShape(CLOSE);
 
+  // Нурууны том сэрвээ
+  fill(8, 18, 55);
+  beginShape();
+  vertex(-s * 0.28, -s * 0.28);
+  bezierVertex(-s * 0.15, -s * 0.95 + finSway, s * 0.05, -s * 0.8 + finSway, s * 0.05, -s * 0.22);
+  endShape(CLOSE);
+
+  // Хоёрдахь нурууны сэрвээ (жижиг)
+  fill(12, 25, 65);
+  beginShape();
+  vertex(-s * 0.43, -s * 0.2);
+  bezierVertex(-s * 0.46, -s * 0.45 + finSway * 0.8, -s * 0.36, -s * 0.42 + finSway * 0.8, -s * 0.35, -s * 0.15);
+  endShape(CLOSE);
+
+  // Цээжний сэрвээ
+  fill(15, 35, 85);
+  beginShape();
+  vertex(-s * 0.05, s * 0.12);
+  bezierVertex(-s * 0.22, s * 0.42 + finSway * 1.5, s * 0.12, s * 0.45 + finSway * 1.5, s * 0.16, s * 0.18);
+  endShape(CLOSE);
+
+  // Заламж (3 ширхэг нум)
+  stroke(70, 100, 150, 130);
+  strokeWeight(s * 0.015);
   noFill();
-  triangle(size * 0.35, 0, size * 0.68, -mouthOpen, size * 0.68, mouthOpen);
+  for (let i = 0; i < 3; i++) {
+    arc(s * 0.16 + i * s * 0.1, 0, s * 0.2, s * 0.42, -PI * 0.45, PI * 0.45);
+  }
 
+  // Нүд (гялалзсан) + хөмсөг
+  noStroke();
   fill(255);
-  triangle(size * 0.45, -mouthOpen + 2, size * 0.5, 0, size * 0.55, -mouthOpen + 2);
-  triangle(size * 0.45, mouthOpen - 2, size * 0.5, 0, size * 0.55, mouthOpen - 2);
+  ellipse(s * 0.42, -s * 0.1, s * 0.13, s * 0.13);
+  fill(20, 25, 40);
+  ellipse(s * 0.44, -s * 0.1, s * 0.07, s * 0.07);
+  fill(255);
+  ellipse(s * 0.46, -s * 0.13, s * 0.028, s * 0.028);
+
+  stroke(8, 18, 55);
+  strokeWeight(s * 0.025);
+  line(s * 0.33, -s * 0.18, s * 0.49, -s * 0.15);
+
+  // Хамар
+  noStroke();
+  fill(8, 18, 55);
+  arc(s * 0.58, -s * 0.04, s * 0.09, s * 0.06, 0, PI);
+
+  // Ам: хазж байгаа үед том нээгдэнэ
+  let biting = frameCount < shark.biting;
+  let mouthOpen = biting
+    ? s * 0.09 + sin(frameCount * 0.3) * s * 0.02
+    : abs(sin(frameCount * 0.08)) * s * 0.06;
+
+  // Амны дотор (харагдсан үед бараан улаан)
+  noStroke();
+  fill(80, 10, 25);
+  beginShape();
+  vertex(s * 0.3, s * 0.1);
+  bezierVertex(s * 0.36, s * 0.1 + mouthOpen * 0.5, s * 0.44, s * 0.1 + mouthOpen * 0.6, s * 0.5, s * 0.1 + mouthOpen);
+  bezierVertex(s * 0.44, s * 0.07 + mouthOpen * 0.3, s * 0.36, s * 0.06, s * 0.3, s * 0.08);
+  endShape(CLOSE);
+
+  stroke(255, 255, 255, 200);
+  strokeWeight(s * 0.012);
+  noFill();
+  line(s * 0.3, s * 0.1, s * 0.5, s * 0.1 + mouthOpen);
+
+  noStroke();
+  fill(255);
+  for (let i = 0; i < 4; i++) {
+    let tx = s * (0.33 + i * 0.045);
+    triangle(
+      tx, s * 0.1,
+      tx + s * 0.03, s * 0.1 + mouthOpen * 0.7 + s * 0.012,
+      tx + s * 0.06, s * 0.1
+    );
+    triangle(
+      tx, s * 0.1 + mouthOpen * 0.9,
+      tx + s * 0.03, s * 0.1 + mouthOpen * 0.3,
+      tx + s * 0.06, s * 0.1 + mouthOpen * 0.9
+    );
+  }
 
   pop();
 }
 
 function moveShark(s) {
-  let moveSpeed = 4; 
+  let moveSpeed = 4;
+  let vy = 0;
 
-  if (keyIsDown(87) || keyIsDown(119)) {
+  s.y += sin(frameCount * 0.03) * 0.3;
+
+  if (keyIsDown(87) || keyIsDown(119) || keyIsDown(UP_ARROW)) {
     s.y -= moveSpeed;
+    vy = -1;
   }
-  if (keyIsDown(83) || keyIsDown(115)) {
+  if (keyIsDown(83) || keyIsDown(115) || keyIsDown(DOWN_ARROW)) {
     s.y += moveSpeed;
+    vy = 1;
   }
-  if (keyIsDown(65) || keyIsDown(97)) {
+  if (keyIsDown(65) || keyIsDown(97) || keyIsDown(LEFT_ARROW)) {
     s.x -= moveSpeed;
     s.speedX = -1;
   }
-  if (keyIsDown(68) || keyIsDown(100)) {
+  if (keyIsDown(68) || keyIsDown(100) || keyIsDown(RIGHT_ARROW)) {
     s.x += moveSpeed;
     s.speedX = 1;
   }
 
-  s.x = constrain(s.x, s.size / 2, width - s.size / 2);
-  s.y = constrain(s.y, s.size / 4, height - 60);
+  // Хазайлт (дээш/доош явахад бие нь хазайна - 3D харагдац)
+  s.tilt = lerp(s.tilt, vy * 0.14, 0.06);
+
+  s.x = constrain(s.x, s.size * 0.6, width - s.size * 0.6);
+  s.y = constrain(s.y, s.size * 0.3, height - 70);
 }
 
 function checkSharkEatFishes() {
@@ -333,21 +664,41 @@ function checkSharkEatFishes() {
     let f = fishes[i];
     let d = dist(shark.x, shark.y, f.x, f.y);
 
-    if (d < shark.size / 2) {
+    if (d < shark.size * 0.45) {
       fishes.splice(i, 1);
+      eatenCount++;
+      shark.biting = frameCount + 18;
+
+      // Идсэн загасны оронд бөмбөлөгүүд гарах нь
+      for (let k = 0; k < 3; k++) {
+        bubbles.push({
+          x: f.x + random(-20, 20),
+          y: f.y + random(-20, 20),
+          size: random(6, 14),
+          speed: random(1, 3)
+        });
+      }
     }
   }
 }
 
 function drawBubble(bubble) {
-  fill(255, 255, 255, 120);
-  stroke(255, 255, 255, 200);
-  strokeWeight(1);
+  noStroke();
+  fillRadialGradient(
+    bubble.x - bubble.size * 0.3, bubble.y - bubble.size * 0.3, bubble.size * 0.9,
+    rgba(255, 255, 255, 150),
+    rgba(200, 230, 255, 40)
+  );
   ellipse(bubble.x, bubble.y, bubble.size);
+
+  // Гялбаа (цацраг)
+  fill(255, 255, 255, 220);
+  ellipse(bubble.x - bubble.size * 0.25, bubble.y - bubble.size * 0.25, bubble.size * 0.18, bubble.size * 0.18);
 }
 
 function moveBubble(bubble) {
   bubble.y -= bubble.speed;
+  bubble.x += sin(frameCount * 0.05 + bubble.size) * 0.3;
 
   if (bubble.y < -bubble.size) {
     bubble.y = height - 50;
@@ -364,7 +715,10 @@ function mousePressed() {
         y: mouseY,
         size: random(30, 60),
         speed: random() > 0.5 ? speedVal : -speedVal,
-        color: color(random(100, 255), random(100, 255), random(255))
+        baseSpeed: speedVal,
+        color: color(random(100, 255), random(100, 255), random(255)),
+        offset: random(1000),
+        dartUntil: 0
       });
     } else if (mouseButton === RIGHT) {
       bubbles.push({
@@ -375,4 +729,15 @@ function mousePressed() {
       });
     }
   }
+}
+
+// UI статистикийг шинэчлэх
+function updateStats() {
+  if (frameCount % 8 !== 0) return;
+  let elFish = document.getElementById('stat-fish');
+  let elBubbles = document.getElementById('stat-bubbles');
+  let elEaten = document.getElementById('stat-eaten');
+  if (elFish) elFish.textContent = fishes.length;
+  if (elBubbles) elBubbles.textContent = bubbles.length;
+  if (elEaten) elEaten.textContent = eatenCount;
 }
